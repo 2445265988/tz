@@ -1,27 +1,28 @@
 <template>
-  <div id="mapshow" v-show="mapshopPopup" style="height: 100%; background-color:white; display: flex; justify-content: center; ">
-    <div role="tabpanel" class="check-div form-inline" style="z-index: 1;display: flex;position: absolute; align-items: center;">
-      <input type="text" class="form-control input-sm" id="search_content" placeholder="输入查询内容"
-             style="width: 300px;height: 40px;margin-top: 15px;margin-right: 10px;">
-      <button class="btn btn-white btn-xs " @click="search_tech_type()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">查 询 </button>
-      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="renew_gragh()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">清空</button>
-      <el-switch v-model="value" :before-change="beforeChange" @change="change" :loading="loading" activeValue=true inactiveValue=false active-color="#13ce66" width="80" active-text="打开热力图" inactive-text="关闭热力图" />
-      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawSearch()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制区域搜索</button>
-      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="hotShow()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">热力图显示</button>
-      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="linedraw()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">测距显示</button>
-      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="clusterShow()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">聚合显示</button>
-      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawPath()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制路线</button>
-      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="clearpath()"
-              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">清除路线</button>
+  <div role="tabpanel" class="check-div form-inline" style="z-index: 1;display: flex;position: absolute; align-items: center;">
+    <input type="text" class="form-control input-sm" id="search_content" placeholder="输入查询内容"
+           style="width: 300px;height: 40px;margin-top: 15px;margin-right: 10px;">
+    <button class="btn btn-white btn-xs " @click="search_tech_type()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">查 询 </button>
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="renew_gragh()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">清空</button>
+    <el-switch v-model="value" :before-change="beforeChange" @change="change" :loading="loading" activeValue=true inactiveValue=false active-color="#13ce66" width="80" active-text="打开热力图" inactive-text="关闭热力图" />
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawSearch2()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制区域搜索</button>
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="hotShow()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">热力图显示</button>
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="linedraw()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">测距显示</button>
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="clusterShow()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">聚合显示</button>
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawPath()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制路线</button>
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="clearpath()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">清除路线</button>
 
-    </div>
+  </div>
+  <div id="mapshow" v-show="mapshopPopup" style="height: 100%; background-color:white; display: flex; justify-content: center; ">
+
     <div id="map" class="mymap" style="width:100%;height:100%"></div>
 
 
@@ -71,11 +72,7 @@
             style="z-index: 1;position: absolute; " >{{ distance/1000}} kilometers</button>
 
   </div>
-  <div id="mapWithDraw" v-show="mapshopPopup2" style="width:100%;height:100%">
-    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawSearch()"
-            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制区域搜索</button>
-
-  </div>
+  <div id="mapWithDraw" v-show="mapshopPopup2" style="width:100%;height:100%"></div>
 </template>
 
 <script>
@@ -124,18 +121,6 @@ export default {
       kgdataname: [],
       kgdata: [],
       dataWebsites: [
-        {
-          id: 1,
-          name: "赣南宁都地区1:50 000青塘幅矿产地质图数据集",
-          keyword: "赣州市",
-          latitude: 26.20,
-          longitude: 115.45,
-          introduction: "该数据集主要由矿产地质图（MapGIS格式）及矿产信息卡片（Word格式）组成。矿产地质图主要由主图、综合柱状图、镶图、地质构造格架剖面图、成矿区带图及图例组成。镶图包括牛形坝银金和狮吼山矽卡岩型硫铁多金属2个典型矿床的平面图和剖面图；图例包括构造、蚀变矿化、岩脉、矿产图例；修饰内容主要包括责任表、中国地质调查局局徽及图幅索引。青塘幅矿产信息卡片汇编了图幅内主要的矿床、矿点情况，包括金属矿产、能源矿产和非金属矿产，共14个矿区的基本矿产地质信息。",
-          // image: require("../../image/center/diliziyuanzhongxin.jpg"),
-          place: "江西省赣州市，东经115°45′～116°00′，北纬26°20′～26°30′",
-          url: "http://geochina.cgs.gov.cn/html/2019/S1/2019S109.htm#close"
-        },
-
       ],
       selectedItemIndex: -1,
       mapshopPopup:true,
@@ -356,7 +341,7 @@ export default {
       window.map.on("contextmenu", this.getLngLat);
 
       // 添加点击事件监听
-      window.map.on("singleclick", (e) => {
+      window.map.on("dblclick", (e) => {
         // e.preventDefault(); // 阻止默认的上下文菜单行为
         console.log("左键点击地图")
         // 判断是否点击在点上
@@ -753,6 +738,10 @@ export default {
 
     // 热力图显示
     async hotShow() {
+      this.mapshopPopup=true;
+      this.mapshopPopup1=false;
+      this.mapshopPopup2=false;
+
       const layer = this.getLayerByName("hot");
 
       if (this.hotShowFlag) {
@@ -887,6 +876,9 @@ export default {
     },
     // 目录数据聚合显示图层方法
     async clusterShow() {
+      this.mapshopPopup=true;
+      this.mapshopPopup1=false;
+      this.mapshopPopup2=false;
       const layer = this.getLayerByName("cluster");
       if (this.clusterShowFlag) {
         layer.setSource(new VectorSource({
@@ -1089,30 +1081,93 @@ export default {
 
       });
     },
+    drawSearch2(){
+
+      console.log('开始区域搜索')
+      this.mapshopPopup=true;
+      // this.mapshopPopup1=false;
+      // this.mapshopPopup2=true;
+
+      const source2=new VectorSource({
+        features: this.features,
+      })
+      const vectorLayer2 = new VectorLayer({
+        source: source2
+      });
+      window.map.addLayer(vectorLayer2);
+      const markersLayer = new VectorLayer({
+        source: new VectorSource({
+          features: this.features,
+        }),
+        name: 'markersLayer',
+      });
+      window.map.addLayer(markersLayer);
+      const draw = new Draw({
+        source: source2,
+        type: 'Circle',
+      });
+      window.map.addInteraction(draw);
+      draw.on('drawstart', () => {
+        // this.allowLeftClick = false;
+        // 清除之前的绘制的圆形图层的数据源
+        // window.map2.addLayer(markersLayer);
+        source2.clear();
+
+        // this.circleLayer.getSource().clear();
+      });
+      draw.on('drawend', event => {
+        console.log("绘画结束")
+        const drawnFeature = event.feature;
+        const drawnGeometry = drawnFeature.getGeometry();
+        const featuresInExtent = [];
+        console.log(markersLayer.getSource().getFeatures().length)
+
+        markersLayer.getSource().forEachFeature(feature => {
+          const featureGeometry = feature.getGeometry();
+          if (drawnGeometry.intersectsExtent(featureGeometry.getExtent())) {
+            featuresInExtent.push(feature);
+          }
+        });
+        // 高亮选中的标记点
+        this.highlightFeatures(featuresInExtent);
+        // 添加绘制的圆形要素到圆形图层的数据源
+        // this.circleLayer.getSource().addFeature(drawnFeature);
+        // 启用其他左键点击事件
+        // this.allowLeftClick = true;
+
+
+
+      });
+    },
 
     highlightFeatures(features){
       // 清除之前的高亮效果
       this.selectedFeatures.forEach(feature => {
+        const originalText = feature.getStyle().getText();
         feature.setStyle(new Style({
           image: new Icon({
             src: require("../assets/img/home_img/地点.png"),
             scale: [0.2,0.2],
           }),
+          text: originalText, // 使用原有的文本样式
         }));
       });
 
       // 添加高亮效果到选中的标记点
       features.forEach(feature => {
+        const originalText = feature.getStyle().getText();
         feature.setStyle(new Style({
           image: new Icon({
             src: require("../assets/img/home_img/地点1.png"),
             scale: [0.2,0.2],
           }),
+          text: originalText, // 使用原有的文本样式
         }));
       });
 
       this.selectedFeatures = features;
     },
+
 
   }
 }
