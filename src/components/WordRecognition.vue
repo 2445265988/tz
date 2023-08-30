@@ -1,94 +1,56 @@
 <template>
-    <div class="check-div form-inline">
-        <input type="file" id="cixing_files" style="display: none;" @change="cixing_fileImport();">
-        <button class="btn btn-yellow btn-xs" id="cixing_file_btn" data-toggle="modal"
-            onclick="document.getElementById('cixing_files').click()">导入文本<img
-                src="../assets/img/home_img/导入文本5.png"></button>
-    </div>
-    <div>
-        <textarea id="wenben_textarea" style="margin: 20px; height: 270px;width: 1200px; resize: none"></textarea>
-    </div>
-    <div class="check-div form-inline" style="height: 100px;line-height: 99px;background-color: #eff3f6">
-        <button class="btn btn-yellow btn-xs btn-model" index="1" id="zhong_wen_fen_ci" data-toggle="modal"
-            @click="Word_Recognition('zhongwen_fenci', $event)"><img v-if="flag === '1'"
-                src="../assets/img/home_img/分词标注.png"> <img v-else src="../assets/img/home_img/分词标注_hover.png">
-            <h5 style="font-size: 10px;text-align: center">中文分词</h5>
-        </button>
-        <button class="btn btn-yellow btn-xs btn-model" index="2" id="extract_tags" data-toggle="modal"
-            @click="Word_Recognition('extract_tags', $event)"><img v-if="flag === '2'"
-                src="../assets/img/home_img/关键词提取.png"><img v-else src="../assets/img/home_img/关键词提取_hover.png">
-            <h5 style="font-size: 10px;text-align: center">关键词提取</h5>
-        </button>
-        <button class="btn btn-yellow btn-xs btn-model" index="3" id="word_frequency_statics" data-toggle="modal"
-            @click="Word_Recognition('frequency_statics', $event)"><img v-if="flag === '3'"
-                src="../assets/img/home_img/词频统计.png"><img v-else src="../assets/img/home_img/词频统计_hover.png">
-            <h5 style="font-size: 10px;text-align: center">词频统计</h5>
-        </button>
-        <button class="btn btn-yellow btn-xs btn-model" index="4" id="extract_toponym" data-toggle="modal"
-            @click="Word_Recognition('relation_recognition', $event)"><img v-if="flag === '4'"
-                src="../assets/img/home_img/依存文法.png"><img v-else src="../assets/img/home_img/依存文法_hover.png">
-            <h5 style="font-size: 10px;text-align: center">三元组抽取</h5>
-        </button>
-        <!-- <button class="btn btn-yellow btn-xs btn-model" index="5" id="entity_recognition" data-toggle="modal"
-            @click="Word_Recognition('entity_recognition', $event)"><img v-if="flag === '5'"
-                src="../assets/img/home_img/实体抽取.png"><img v-else src="../assets/img/home_img/实体抽取_hover.png">
-            <h5 style="font-size: 10px;text-align: center">实体抽取</h5>
-        </button>
-        <button class="btn btn-yellow btn-xs btn-model" index="6" id="triplet" data-toggle="modal"
-            @click="Triplet_Recognition('triplet', $event)"><img v-if="flag === '6'"
-                src="../assets/img/home_img/敏感词.png"><img v-else src="../assets/img/home_img/敏感词_hover.png">
-            <h5 style="font-size: 10px;text-align: center">属性抽取</h5>
-        </button>
-        <button class="btn btn-yellow btn-xs btn-model" index="7" data-toggle="modal"><img
-                src="../assets/img/home_img/文本脱敏_hover.png">
-            <h5 style="font-size: 10px;text-align: center">关系抽取</h5>
-        </button>
-        <button class="btn btn-yellow btn-xs btn-model" index="8" data-toggle="modal"><img
-                src="../assets/img/home_img/word2vec_hover.png">
-            <h5 style="font-size: 10px;text-align: center">word2vec</h5>
-        </button>
-        <button class="btn btn-yellow btn-xs btn-model" index="9" data-toggle="modal"><img
-                src="../assets/img/home_img/摘要提取_hover.png">
-            <h5 style="font-size: 10px;text-align: center">摘要提取</h5>
-        </button> -->
-        <button class="btn btn-yellow btn-xs btn-model" index="10" data-toggle="modal"
-            @click="Word_Recognition('map_visualization', $event)"><img src="../assets/img/home_img/地图可视化_hover.png">
-            <h5 style="font-size: 10px;text-align: center">地图可视化</h5>
-        </button>
-    </div>
-    <div>
-        <div id="cixingshibie_textarea"
-            style="margin: 20px; height: 270px;width: 1200px; resize: none;display: none;border: 1px solid black; padding: 10px;"
-            readonly></div>
-        <div id="allmap" style="margin: 20px; height: 450px;width: 1200px; resize: none; display: none"></div>
-        <div id="graph" style="margin: 20px; height: 450px;width: 1200px; resize: none; display: none"></div>
-        <!--    <baidu-map ak="1x0fHCFS8lPL50Mjf8INy4QzVDzq3e1h" style="margin: 20px; height: 450px;width: 1200px; resize: none; display: none"></baidu-map>-->
-        <div id="wordfrequency" style="margin: 20px; height: 450px;width: 1200px; resize: none; display: none"></div>
-    </div>
-  <!-- 数据中心介绍弹窗弹框 -->
-    <div ref="popup" class="popup" v-show="shopPopup">
-      <div class="popup-content">
-        <button class="close-button" @click="closePopup">×</button>
-        <h3><strong>{{ this.tableDataDetail.name }}</strong></h3>
-        <div class="image-container">
-          <img v-show="this.tableDataDetail.image" class="data-image" :src="this.tableDataDetail.image" />
-          <img v-show="!this.tableDataDetail.image" class="data-image" src="src/image/noimage.jpeg" />
+    <div style="height: 100%; background-color:white;">
+        <div class="check-div form-inline">
+            <input type="file" id="cixing_files" style="display: none;" @change="cixing_fileImport();">
+            <el-button id="cixing_file_btn" data-toggle="modal" class="btn btn-yellow btn-xs" type="primary" size="medium"
+                       style=" width: 200px; height: 80px;   margin: 20px;"  onclick="document.getElementById('cixing_files').click()"><img
+                src="../assets/img/导入.png" style="width:60px;height:60px" ><span style="font-size: 20px ;padding-left: 15px">导入文本</span></el-button>
         </div>
-        <div class="info">
-          <p><strong>简介：</strong>{{ this.tableDataDetail.introduction }}</p>
-          <p><strong>经纬度：</strong>{{ this.tableDataDetail.place }}</p>
-          <p><strong>地名历史：</strong><a :href="this.tableDataDetail.url" style="color: #409eff;text-decoration: none;"
-                                      target="_blank">{{ this.tableDataDetail.url
-            }}</a></p>
-          <p><strong>查看相关知识图谱： </strong><button @click="checktable()">查看</button></p>
+        <div>
+            <textarea id="wenben_textarea" style="margin: 20px; height: 270px;width:97%; resize: none"></textarea>
         </div>
-      </div>
+        <div class="check-div form-inline" style="height: 100px;line-height: 99px;background-color: #eff3f6">
+            <button class="btn btn-yellow btn-xs btn-model" index="1" id="zhong_wen_fen_ci" data-toggle="modal"
+                style="margin-left: 50px;" @click="Word_Recognition('zhongwen_fenci', $event)"><img v-if="flag === '1'"
+                    src="../assets/img/home_img/分词标注.png"> <img v-else src="../assets/img/home_img/分词标注_hover.png">
+                <h5 style="font-size: 10px;text-align: center">中文分词</h5>
+            </button>
+            <button class="btn btn-yellow btn-xs btn-model" index="2" id="extract_tags" data-toggle="modal"
+                style="margin-left: 50px;" @click="Word_Recognition('extract_tags', $event)"><img v-if="flag === '2'"
+                    src="../assets/img/home_img/关键词提取.png"><img v-else src="../assets/img/home_img/关键词提取_hover.png">
+                <h5 style="font-size: 10px;text-align: center">关键词提取</h5>
+            </button>
+            <button class="btn btn-yellow btn-xs btn-model" index="3" id="word_frequency_statics" data-toggle="modal"
+                style="margin-left: 50px;" @click="Word_Recognition('frequency_statics', $event)"><img v-if="flag === '3'"
+                    src="../assets/img/home_img/词频统计.png"><img v-else src="../assets/img/home_img/词频统计_hover.png">
+                <h5 style="font-size: 10px;text-align: center">词频统计</h5>
+            </button>
+            <button class="btn btn-yellow btn-xs btn-model" index="4" id="extract_toponym" data-toggle="modal"
+                style="margin-left: 50px;" @click="Word_Recognition('relation_recognition', $event)"><img
+                    v-if="flag === '4'" src="../assets/img/home_img/依存文法.png"><img v-else
+                    src="../assets/img/home_img/依存文法_hover.png">
+                <h5 style="font-size: 10px;text-align: center">三元组抽取</h5>
+            </button>
+            <button class="btn btn-yellow btn-xs btn-model" index="10" data-toggle="modal" style="margin-left: 50px;"
+                @click="Word_Recognition('map_visualization', $event)"><img src="../assets/img/home_img/地图可视化_hover.png">
+                <h5 style="font-size: 10px;text-align: center">地图可视化</h5>
+            </button>
+        </div>
+        <div>
+            <div id="cixingshibie_textarea"
+                style="margin: 20px; height: 270px;width: 1590px; resize: none;display: none;border: 1px solid black; padding: 10px;"
+                readonly></div>
+            <div id="allmap" style="margin: 20px; height: 450px;width: 1590px; resize: none; display: none"></div>
+            <div id="graph" style="margin: 20px; height: 450px;width: 1200px; resize: none; display: none"></div>
+            <!--    <baidu-map ak="1x0fHCFS8lPL50Mjf8INy4QzVDzq3e1h" style="margin: 20px; height: 450px;width: 1200px; resize: none; display: none"></baidu-map>-->
+            <div id="wordfrequency" style="margin: 20px; height: 450px;width: 1200px; resize: none; display: none"></div>
+        </div>
     </div>
 </template>
 
 <script>
 import "ol/ol.css";
-import { Map, View , Overlay } from "ol";
+import { Map, View } from "ol";
 import * as echarts from 'echarts'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { XYZ, Vector as VectorSource } from 'ol/source';
@@ -97,15 +59,11 @@ import Feature from 'ol/Feature';
 import { Text, Style, Fill, Icon } from "ol/style";
 // import * as olProj from "ol/proj";
 import { WordReconiton, TripletRecognition } from '../utils/kk'
-// import * as olProj from "ol/proj";
 export default {
     name: "WordRecognition",
     data() {
         return {
-            flag: 0,
-            popup: null,
-            shopPopup: false,
-            tableDataDetail: {},
+            flag: 0
         }
     },
     components: {
@@ -248,7 +206,7 @@ export default {
             }
             return color;
         },
-
+        // 显示地图
         initMap(data) {
             if (!data) {
                 return
@@ -288,14 +246,13 @@ export default {
                 features.push(feature)
             });
 
-
             // 创建一个 vector layer 并添加到地图上
             const vectorLayer = new VectorLayer({
                 source: new VectorSource({
                     features: features,
                 }),
             });
-            window.map = new Map({
+            new Map({
                 target: "allmap",
                 layers: [
                     new TileLayer({
@@ -318,48 +275,8 @@ export default {
                     zoom: 6,
                 }),
             });
-
-            // 添加点击事件监听
-            window.map.on("singleclick", (e) => {
-              // 判断是否点击在点上
-              let feature = window.map.forEachFeatureAtPixel(
-                  e.pixel,
-                  (feature) => feature
-              );
-              console.log(feature);
-              // 如果点击的是数据网站节点，则可以打开数据表格
-              if (feature) {
-                if (feature.values_.feature_type == 'webData') {
-                  // const zoomLevel = 6; // 缩放级别，可以根据需要进行调整
-                  // const latitude = feature.values_.detail.latitude + 10; // 替换为实际的纬度值
-                  // const longitude = feature.values_.detail.longitude; // 替换为实际的经度值
-                  // map.getView().animate({ // 只设置需要的属性即可
-                  //   center: olProj.fromLonLat([longitude, latitude]), // 中心点
-                  //   zoom: zoomLevel, // 缩放级别
-                  //   rotation: undefined, // 缩放完成view视图旋转弧度
-                  // })
-                  this.shopPopup = true
-                  const coordinates = feature.getGeometry().getCoordinates()
-                  this.tableDataDetail = feature.values_.detail
-                  this.popup.setPosition(coordinates);
-                }
-              }
-            })
-
-          this.addOverlay()
         },
-      // 显示地图
-        addOverlay() {
-          let elPopup = this.$refs.popup;
-          this.popup = new Overlay({
-            element: elPopup,
-            positioning: "bottom-center",
-            stopEvent: false,
-            offset: [0, -20],
-          });
-          window.map.addOverlay(this.popup);
-        },
-      // 显示通过文本获得的三元组图谱
+        // 显示通过文本获得的三元组图谱
         initGraph(data, links) {
             document.getElementById("graph").style.display = "block"
             var myChart = echarts.init(document.getElementById('graph'));
@@ -431,44 +348,21 @@ export default {
             };
             myChart.setOption(option);
 
-        },
-
-        closePopup() {
-          this.shopPopup = false;
-          this.tableDataDetail = {};
-        },
+        }
     }
 }
 </script>
 
 <style scoped>
-.popup {
-  width: 400px;
-  background-color: white;
-  padding: 2px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgb(177, 177, 177);
-}
-.popup-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 4px;
-}
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 18px;
-  cursor: pointer;
-}
-.image-container {
-  flex: 1;
-  text-align: center;
-}
-.data-image {
-  max-width: 100%;
-  height: 250px;
-  object-fit: contain;
-}
+@import "../assets/css/bootstrap.css";
 
+
+#wenben_textarea {
+    color: black;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: justify;
+    padding: 20px;
+}
 </style>

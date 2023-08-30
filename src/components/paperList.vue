@@ -13,21 +13,14 @@
           <el-col :span="2" :offset="2">
             <el-button type="primary" @click="search">查询</el-button>
           </el-col>
-          <!-- <el-col :span="4" :offset="8">
-              <el-select v-model="sortKey" placeholder="选择排序方式">
-                  <el-option label="id" value="id"></el-option>
-                  <el-option label="name" value="name"></el-option>
-                  <el-option label="sex" value="sex"></el-option>
-                  <el-option label="address" value="address"></el-option>
-              </el-select>
-          </el-col> -->
         </el-row>
       </el-header>
       <el-main>
-        <el-table :data="userList">
-          <el-table-column prop="id" label="ID"></el-table-column>
-          <el-table-column prop="name" label="姓名"></el-table-column>
-          <el-table-column prop="email" label="邮箱"></el-table-column>
+        <el-table :data="paperList">
+          <el-table-column prop="id" label="ID" width="80"></el-table-column>
+          <el-table-column prop="name" label="资料名" width="500" ></el-table-column>
+          <el-table-column prop="place" label="地区"  ></el-table-column>
+          <el-table-column prop="year" label="年代"></el-table-column>
           <el-table-column fixed="right" label="操作" width="120">
             <template #default="scope">
               <el-button link type="primary" size="small"
@@ -37,9 +30,9 @@
           </el-table-column>
         </el-table>
       </el-main>
-      <el-dialog title="添加用户" v-model="dialogVisible">
+      <el-dialog title="添加资料" v-model="dialogVisible">
         <el-form :model="form">
-          <el-form-item label="用户名">
+          <el-form-item label="资料名">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
           <el-form-item label="密码">
@@ -76,7 +69,7 @@ import { paperList, addPaper, deletePaper } from "../utils/kk";
 
 
 export default {
-  name: "paperlist",
+  name: "paperList",
   data() {
     return {
       btn_click: null,
@@ -92,14 +85,13 @@ export default {
         address: '',
         sex: ''
       },
-      userList: []
+      paperList: []
     }
   },
   created() {
     paperList().then(response => {
       console.log(response)
-      this.userList = response
-      // this.formbody_renew(response)
+      this.paperList = response
     })
   },
   methods: {
@@ -120,7 +112,7 @@ export default {
     },
     search() {
       paperList(this.searchKey).then(response => {
-        this.userList = response
+        this.paperList = response
       })
     },
     handleDelete(index, data) {

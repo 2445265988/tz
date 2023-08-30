@@ -1003,7 +1003,7 @@ export default {
                     source: clusterSource,
                     name: 'cluster',
                     style: function (feature) {
-                        debugger
+
                         var size = feature.get('features').length;
                         if (size == 1) {
                             var features = feature.get('features');
@@ -1051,10 +1051,11 @@ export default {
         },
         // 热力图显示
         async hotShow() {
+          console.log("点击热力图显示")
             const layer = this.getLayerByName("hot");
-            debugger
+
             if (this.hotShowFlag) {
-                debugger
+
                 window.map.removeLayer(layer);
                 this.hotShowFlag = false
             } else {

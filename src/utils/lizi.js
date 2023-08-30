@@ -7,9 +7,8 @@
  * @author Rob Sivan
  * @date 2022/9/20
  */
-
 const COLOR = "#39BC54"; // 设定粒子特效颜色
-let MESSAGE = document.getElementById(this.$refs.changeTextRef.id).textContent; // 根据标签的ID获取待处理的文字内容
+let MESSAGE = document.getElementById("ChangeText").textContent; // 根据标签的ID获取待处理的文字内容
 
 let FONT_SIZE = (window.innerWidth * 0.08); // 字体大小
 let AMOUNT = 6000; // 设定粒子数量
@@ -27,7 +26,7 @@ const SCATTER = true; // 散射模式
 // 若处于移动设备展示
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
     // Mobile
-    MESSAGE = document.getElementById(this.$refs.changeTextRef.id).textContent; // 通过标签ID获取文本内容
+    MESSAGE = document.getElementById("ChangeText").textContent; // 通过标签ID获取文本内容
 
     FONT_SIZE = 50;  // 字体大小减小
     AMOUNT = 300; // 粒子数量减少
@@ -38,7 +37,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     SCATTER_VELOCITY = 2; // 散射速度
 }
 
-const canvas = document.getElementById(this.$refs.changeTextRef.id);
+const canvas = document.getElementById("ChangeText");
 const ctx = canvas.getContext("2d"); // 创建画布
 
 let POINTS = [];
