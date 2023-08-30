@@ -7,8 +7,9 @@
               style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">查 询 </button>
       <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="renew_gragh()"
               style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">清空</button>
-      <el-switch v-model="value" :before-change="beforeChange" @change="change" :loading="loading" activeValue=true inactiveValue=false active-color="#13ce66" width="80" active-text="按月付费" inactive-text="按年付费" />
-
+      <el-switch v-model="value" :before-change="beforeChange" @change="change" :loading="loading" activeValue=true inactiveValue=false active-color="#13ce66" width="80" active-text="打开热力图" inactive-text="关闭热力图" />
+      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawSearch()"
+              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制区域搜索</button>
       <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="hotShow()"
               style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">热力图显示</button>
       <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="linedraw()"
@@ -70,6 +71,11 @@
             style="z-index: 1;position: absolute; " >{{ distance/1000}} kilometers</button>
 
   </div>
+  <div id="mapWithDraw" v-show="mapshopPopup2" style="width:100%;height:100%">
+    <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawSearch()"
+            style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制区域搜索</button>
+
+  </div>
 </template>
 
 <script>
@@ -82,13 +88,14 @@ import Feature from "ol/Feature";
 import { Point } from "ol/geom";
 import {Circle, Fill, Icon, Stroke, Style, Text} from "ol/style";
 import { Vector as VectorLayer } from "ol/layer";
-import { Vector as VectorSource } from "ol/source";
+import { OSM,Vector as VectorSource } from "ol/source";
 import { LineString } from 'ol/geom';
 import * as olProj from "ol/proj";
 import * as echarts from "echarts";
 import {addPaper, paperList} from "../utils/kk";
 import { zhengzefenci } from '../utils/kk'
 import { Heatmap as HeatmapLayer } from "ol/layer";
+
 import { fromLonLat } from 'ol/proj';
 
 import Vue from "vue";
@@ -97,6 +104,10 @@ import Cluster from "ol/source/Cluster";
 export default {
   data() {
     return {
+      drawInteraction: null,
+      selectedFeatures:[],
+      circleLayer:null,
+      allowLeftClick: true,
       pathFeature:null,
       mapmarkers:null,
       value: false,
@@ -129,6 +140,7 @@ export default {
       selectedItemIndex: -1,
       mapshopPopup:true,
       mapshopPopup1:false,
+      mapshopPopup2:false,
       // namev: '',
       laiyuanv: '',
       description: '',
@@ -231,7 +243,8 @@ export default {
           })
           let style = new Style({
             image: new Icon({
-              src: require("../assets/img/home_img/地点.png")
+              src: require("../assets/img/home_img/地点.png"),
+              scale: [0.2,0.2],
             }),
             // 标点的文字
             text: new Text({
@@ -276,7 +289,8 @@ export default {
           })
           let style = new Style({
             image: new Icon({
-              src: require("../assets/img/home_img/地点.png")
+              src: require("../assets/img/home_img/地点.png"),
+              scale: [0.2,0.2],
             }),
             // 标点的文字
             text: new Text({
@@ -368,10 +382,6 @@ export default {
       })
       this.addOverlay();
       this.setWebSiteMarker();
-
-
-
-
     },
     checktable() {
       let params = {}
@@ -620,7 +630,8 @@ export default {
       })
       let style = new Style({
         image: new Icon({
-          src: require("../assets/img/home_img/地点.png")
+          src: require("../assets/img/home_img/地点.png"),
+          scale: [0.2,0.2],
         }),
         // 标点的文字
         text: new Text({
@@ -1001,6 +1012,106 @@ export default {
           // 继续处理逻辑
         }
       }
+    },
+    drawSearch(){
+
+      console.log('开始区域搜索')
+      this.mapshopPopup=false;
+      this.mapshopPopup1=false;
+      this.mapshopPopup2=true;
+
+      const source2=new VectorSource({
+        features: this.features,
+      })
+      const vectorLayer2 = new VectorLayer({
+        source: source2
+      });
+      window.map2 = new Map({
+        target: 'mapWithDraw', // 绑定到指定的div容器
+        layers: [
+          new TileLayer({
+            source: new XYZ({
+              url: 'https://t0.tianditu.gov.cn/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=6bf83bd1a699540d61936a68711eb096',
+            }),
+          }),
+          new TileLayer({
+            source: new XYZ({
+              url: "https://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=6bf83bd1a699540d61936a68711eb096",
+            }),
+            isGroup: true,
+            name: "天地图文字标注",
+          }),
+          vectorLayer2
+        ],
+        view: new View({
+          center: [0, 0], // 设置地图中心点
+          zoom: 2, // 设置地图缩放级别
+        }),
+      });
+      const markersLayer = new VectorLayer({
+        source: new VectorSource({
+          features: this.features,
+        }),
+        name: 'markersLayer',
+      });
+      window.map2.addLayer(markersLayer);
+      const draw = new Draw({
+        source: source2,
+        type: 'Circle',
+      });
+      window.map2.addInteraction(draw);
+      draw.on('drawstart', () => {
+        // 清除之前的绘制的圆形图层的数据源
+        // window.map2.addLayer(markersLayer);
+        source2.clear();
+        // this.circleLayer.getSource().clear();
+      });
+      draw.on('drawend', event => {
+        console.log("绘画结束")
+        const drawnFeature = event.feature;
+        const drawnGeometry = drawnFeature.getGeometry();
+        const featuresInExtent = [];
+        console.log(markersLayer.getSource().getFeatures().length)
+        console.log(vectorLayer2.getSource().getFeatures().length)
+
+        markersLayer.getSource().forEachFeature(feature => {
+          const featureGeometry = feature.getGeometry();
+          if (drawnGeometry.intersectsExtent(featureGeometry.getExtent())) {
+            featuresInExtent.push(feature);
+          }
+        });
+        // 高亮选中的标记点
+        this.highlightFeatures(featuresInExtent);
+        // 添加绘制的圆形要素到圆形图层的数据源
+        // this.circleLayer.getSource().addFeature(drawnFeature);
+
+
+
+      });
+    },
+
+    highlightFeatures(features){
+      // 清除之前的高亮效果
+      this.selectedFeatures.forEach(feature => {
+        feature.setStyle(new Style({
+          image: new Icon({
+            src: require("../assets/img/home_img/地点.png"),
+            scale: [0.2,0.2],
+          }),
+        }));
+      });
+
+      // 添加高亮效果到选中的标记点
+      features.forEach(feature => {
+        feature.setStyle(new Style({
+          image: new Icon({
+            src: require("../assets/img/home_img/地点1.png"),
+            scale: [0.2,0.2],
+          }),
+        }));
+      });
+
+      this.selectedFeatures = features;
     },
 
   }
