@@ -15,6 +15,10 @@
               style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">测距显示</button>
       <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="clusterShow()"
               style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">聚合显示</button>
+      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="drawPath()"
+              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">绘制路线</button>
+      <button class="btn btn-yellow btn-xs" data-toggle="modal" @click="clearpath()"
+              style="width:100px;height: 40px;margin-top: 15px;margin-right: 10px;">清除路线</button>
 
     </div>
     <div id="map" class="mymap" style="width:100%;height:100%"></div>
@@ -51,8 +55,6 @@
     <div class="addnew_ck1" v-show="kgvisible">
         <div id="gragh1" style="width:700px;height:700px"></div>
         <button @click="closekg()">关闭</button>
-
-
     </div>
   </div>
   <div id="mapWithMeasurement" v-show="mapshopPopup1" style="width:100%;height:100%">
@@ -61,7 +63,6 @@
         v-show="showDistance"
         id="distance-overlay"
         class="distance-overlay"
-
     >
       <div id="distance-value" class="distance-text">{{ distance }} meters</div>
     </div>
@@ -88,12 +89,16 @@ import * as echarts from "echarts";
 import {addPaper, paperList} from "../utils/kk";
 import { zhengzefenci } from '../utils/kk'
 import { Heatmap as HeatmapLayer } from "ol/layer";
+import { fromLonLat } from 'ol/proj';
+
 import Vue from "vue";
 import Cluster from "ol/source/Cluster";
 // import
 export default {
   data() {
     return {
+      pathFeature:null,
+      mapmarkers:null,
       value: false,
       clusterShowFlag: false,
       hotShowFlag:true,
@@ -143,6 +148,7 @@ export default {
       clicklalng: {},
       filelalo: [],
       heatLayer:null,
+      pathLayer:null,
       showDistance: false,
       distance: 0,
       VectorSource:null,
@@ -197,9 +203,6 @@ export default {
         this.loading = false;
       }, 1500)
     },
-
-
-
     async fetchData() {
       try {
         const response = await paperList();
@@ -210,7 +213,6 @@ export default {
         console.error('获取数据失败', error);
       }
     },
-
     //数据导入地图
     setWebSiteMarker() {
       //获取数据网站列表
@@ -254,6 +256,7 @@ export default {
         }),
         name: 'webMarkerCluster',
       });
+      this.mapmarkers=this.features;
       window.map.addLayer(clusterLayer)
     },
     setWebSiteMarker1() {
@@ -669,8 +672,6 @@ export default {
       console.log(new_features);
       let layer = this.getLayerByName('webMarkerCluster');
       window.map.removeLayer(layer);
-      // layer.setFeature(new_features);
-      // layer.addFeatures(new_features);
       console.log(layer);
       var clusterLayer = new VectorLayer({
         source: new VectorSource({
@@ -679,11 +680,16 @@ export default {
         name: 'webMarkerCluster',
       });
       window.map.addLayer(clusterLayer);
+      this.mapmarkers=new_features;
+      this.clearpath();
+      this.drawPath();
     },
     renew_gragh() {
       var content = document.getElementById("search_content");
       content.value = '';
       this.setWebSiteMarker();
+      this.clearpath();
+
       // this.draw_gragh(this.data, this.link)
     },
     async handleFileChange(event) {
@@ -939,8 +945,63 @@ export default {
         window.map.addLayer(clusterLayer)
       }
     },
+    getFeaturesFromMap(map) {
+      const features = [];
+
+      map.getLayers().forEach(layer => {
+        if (layer instanceof VectorLayer) { // 仅处理矢量图层
+          const source = layer.getSource();
+          source.forEachFeature(feature => {
+            features.push(feature);
+          });
+        }
+      });
+      console.log(features)
+
+      return features;
+    },
+    clearpath(){
+      console.log("清除路线")
+      window.map.removeLayer(this.pathLayer);
+      this.pathFeature=null;
 
 
+    },
+    drawPath() {
+      console.log("开始绘制路线")
+      if (this.pathFeature) {
+        window.map.removeLayer('webPathCluster');
+        this.pathFeature=null;
+      }
+      console.log(this.mapmarkers)
+      if (this.mapmarkers && Array.isArray(this.mapmarkers)) {
+        const numberOfFeatures = this.mapmarkers.length;
+        console.log(numberOfFeatures)
+        if (numberOfFeatures > 1) {
+          const pathCoordinates = this.mapmarkers.map(marker => {console.log(marker.getGeometry().getCoordinates()); // 打印坐标
+          return marker.getGeometry().getCoordinates()});
+          this.pathFeature = new Feature({
+            geometry: new LineString(pathCoordinates),
+          });
+          this.pathFeature.setStyle(new Style({
+            stroke: new Stroke({
+              color: 'yellow',
+              width: 2,
+            }),
+          }));
+          console.log(this.pathFeature)
+          this.pathLayer=new VectorLayer({
+            source: new VectorSource({
+              features: [this.pathFeature],
+            }),
+            name: 'webPathCluster',
+          })
+
+          window.map.addLayer(this.pathLayer);
+          // 继续处理逻辑
+        }
+      }
+    },
 
   }
 }
